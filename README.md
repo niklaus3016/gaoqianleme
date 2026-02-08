@@ -22,6 +22,18 @@
 
 详细说明请查看 [BUILD_APK.md](BUILD_APK.md)
 
+### APK 签名配置
+
+如果需要上架应用商店（小米、华为、应用宝等），需要配置 APK 签名。
+
+**配置步骤：**
+1. 生成签名密钥库（Keystore）
+2. 将密钥库转换为 Base64
+3. 在 GitHub Secrets 中配置签名信息
+4. 触发构建，自动生成已签名的 APK
+
+详细配置指南请查看 [SIGNING_GUIDE.md](SIGNING_GUIDE.md)
+
 ### 本地运行
 
 **Prerequisites:** Node.js
@@ -45,6 +57,10 @@ npm run cap:sync
 cd android
 chmod +x gradlew
 ./gradlew assembleDebug
+
+# 构建 Release APK（需要配置签名）
+cd android
+./gradlew assembleRelease
 ```
 
 ## 应用信息

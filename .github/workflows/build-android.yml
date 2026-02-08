@@ -43,6 +43,22 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Decode Keystore
+        if: github.event_name != 'pull_request'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > android/release.keystore
+            echo "storeFile=release.keystore" > android/keystore.properties
+            echo "storePassword=$KEYSTORE_PASSWORD" >> android/keystore.properties
+            echo "keyPassword=$KEY_PASSWORD" >> android/keystore.properties
+            echo "keyAlias=$KEY_ALIAS" >> android/keystore.properties
+          fi
+
       - name: Build Debug APK
         run: |
           cd android
@@ -65,11 +81,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+          path: |
+            android/app/build/outputs/apk/release/*.apk
           retention-days: 30
 
       - name: Create Release Summary
         if: success()
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
           echo "## Android APK Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -77,4 +96,9 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
           echo "- **Debug APK**: Available in workflow artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "- **Release APK**: Available in workflow artifacts (unsigned)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release APK**: Available in workflow artifacts" >> $GITHUB_STEP_SUMMARY
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "- **Release APK**: Signed and ready for app store submission" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Release APK**: Unsigned (configure secrets to enable signing)" >> $GITHUB_STEP_SUMMARY
+          fi
