@@ -1,0 +1,9 @@
+
+{
+  "name": "搞钱了么",
+  "description": "一款专为追求财务自由设计的顶级财富管理与人工智能搞钱副业助手。集成实时财务看板、人工智能副业创意引擎和智能财富顾问，助你洞察先机，开启财富增长之路。",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

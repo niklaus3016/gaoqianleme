@@ -1,0 +1,30 @@
+# Android build outputs
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+
+# Capacitor
+android/.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env.local
+.env.*.local
+node_modules
