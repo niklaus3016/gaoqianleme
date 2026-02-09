@@ -57,6 +57,11 @@ jobs:
             echo "storePassword=$KEYSTORE_PASSWORD" >> android/keystore.properties
             echo "keyPassword=$KEY_PASSWORD" >> android/keystore.properties
             echo "keyAlias=$KEY_ALIAS" >> android/keystore.properties
+            echo "Keystore file created successfully"
+            ls -la android/release.keystore
+            cat android/keystore.properties
+          else
+            echo "KEYSTORE_BASE64 is empty, skipping signing"
           fi
 
       - name: Build Debug APK
