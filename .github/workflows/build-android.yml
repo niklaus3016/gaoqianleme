@@ -52,15 +52,15 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
           if [ -n "$KEYSTORE_BASE64" ]; then
-            echo "$KEYSTORE_BASE64" | base64 --decode > android/release.keystore
-            echo "storeFile=release.keystore" > android/keystore.properties
-            echo "storePassword=$KEYSTORE_PASSWORD" >> android/keystore.properties
-            echo "keyPassword=$KEY_PASSWORD" >> android/keystore.properties
-            echo "keyAlias=$KEY_ALIAS" >> android/keystore.properties
+            echo "$KEYSTORE_BASE64" | base64 --decode > android/app/release.keystore
+            echo "storeFile=release.keystore" > android/app/keystore.properties
+            echo "storePassword=$KEYSTORE_PASSWORD" >> android/app/keystore.properties
+            echo "keyPassword=$KEY_PASSWORD" >> android/app/keystore.properties
+            echo "keyAlias=$KEY_ALIAS" >> android/app/keystore.properties
             echo "Keystore file created successfully"
-            echo "File path: $(pwd)/android/release.keystore"
+            echo "File path: $(pwd)/android/app/release.keystore"
             echo "keystore.properties content:"
-            cat android/keystore.properties
+            cat android/app/keystore.properties
           else
             echo "KEYSTORE_BASE64 is empty, skipping signing"
           fi
