@@ -58,7 +58,8 @@ jobs:
             echo "keyPassword=$KEY_PASSWORD" >> android/keystore.properties
             echo "keyAlias=$KEY_ALIAS" >> android/keystore.properties
             echo "Keystore file created successfully"
-            ls -la android/release.keystore
+            echo "File path: $(pwd)/android/release.keystore"
+            echo "keystore.properties content:"
             cat android/keystore.properties
           else
             echo "KEYSTORE_BASE64 is empty, skipping signing"
