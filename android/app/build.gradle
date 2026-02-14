@@ -84,9 +84,8 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.3.0' // 对应com.android.support:recyclerview-v7:28.0.0
     implementation 'androidx.legacy:legacy-support-v4:1.0.0' // 对应com.android.support:support-v4:28.0.0
 
-    // 9.432版本百度SDK本地依赖
-    implementation files('libs/Baidu_MobAds_SDK-release_v9.432.aar')
-    implementation files('libs/Baidu_MobAds_Tools_SDK-release_v3.1.aar')
+    // 百度联盟SDK依赖（使用Maven集成，新域名推荐）
+    implementation 'com.baidu:mobads:9.42.2'
     
     // Capacitor相关依赖
     implementation fileTree(include: ['*.jar'], dir: 'libs')
