@@ -3,8 +3,10 @@ package com.baidu.union;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import com.baidu.mobads.sdk.api.AdSettings;
+import com.baidu.mobads.sdk.api.BaiduAdManager;
+import com.baidu.mobads.sdk.api.BaiduAdInitListener;
 import com.baidu.mobads.sdk.api.RewardVideoAd;
+import com.baidu.mobads.sdk.api.RewardVideoAdListener;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -18,6 +20,7 @@ public class BaiduAdPlugin extends Plugin {
     private RewardVideoAd rewardVideoAd;
     private PluginCall loadCall;
     private PluginCall showCall;
+    private boolean isInitialized = false;
 
     @PluginMethod
     public void init(PluginCall call) {
@@ -30,17 +33,30 @@ public class BaiduAdPlugin extends Plugin {
         }
 
         try {
-            // 初始化百度联盟SDK
-            AdSettings.setAppId(appId);
-            
-            // 获取SDK版本号
-            String sdkVersion = AdSettings.getSDKVersion();
-            Log.d(TAG, "百度联盟SDK初始化成功，版本号: " + sdkVersion);
+            // 初始化百度联盟SDK（9.42.2版本正确写法）
+            BaiduAdManager.getInstance().init(getContext(), appId, new BaiduAdInitListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "百度SDK初始化成功");
+                    isInitialized = true;
+                    
+                    // 获取SDK版本号
+                    String sdkVersion = BaiduAdManager.getInstance().getSDKVersion();
+                    Log.d(TAG, "百度联盟SDK版本号: " + sdkVersion);
 
-            JSObject result = new JSObject();
-            result.put("success", true);
-            result.put("version", sdkVersion);
-            call.resolve(result);
+                    JSObject result = new JSObject();
+                    result.put("success", true);
+                    result.put("version", sdkVersion);
+                    call.resolve(result);
+                }
+
+                @Override
+                public void onFail(int code, String msg) {
+                    Log.e(TAG, "百度SDK初始化失败：code=" + code + ", msg=" + msg);
+                    isInitialized = false;
+                    call.reject("初始化失败: " + msg);
+                }
+            });
         } catch (Exception e) {
             Log.e(TAG, "初始化失败: " + e.getMessage());
             call.reject("初始化失败: " + e.getMessage());
@@ -59,11 +75,22 @@ public class BaiduAdPlugin extends Plugin {
         this.loadCall = call;
 
         try {
-            // 加载激励视频广告
-            rewardVideoAd = new RewardVideoAd(getActivity(), adUnitId);
-            rewardVideoAd.setListener(new RewardVideoAd.RewardVideoAdListener() {
+            if (!isInitialized) {
+                if (loadCall != null) {
+                    JSObject result = new JSObject();
+                    result.put("success", false);
+                    result.put("error", "SDK未初始化");
+                    loadCall.resolve(result);
+                    loadCall = null;
+                }
+                return;
+            }
+
+            // 加载激励视频广告（9.42.2版本正确写法）
+            rewardVideoAd = new RewardVideoAd(getActivity(), adUnitId, new RewardVideoAdListener() {
+                @Override
                 public void onAdLoaded() {
-                    Log.d(TAG, "广告加载成功");
+                    Log.d(TAG, "激励视频广告加载成功");
                     if (loadCall != null) {
                         JSObject result = new JSObject();
                         result.put("success", true);
@@ -72,56 +99,59 @@ public class BaiduAdPlugin extends Plugin {
                     }
                 }
 
-                public void onAdFailed(String s) {
-                    Log.e(TAG, "广告加载失败: " + s);
+                @Override
+                public void onAdFailed(int code, String msg) {
+                    Log.e(TAG, "激励视频广告加载失败：code=" + code + ", msg=" + msg);
                     if (loadCall != null) {
                         JSObject result = new JSObject();
                         result.put("success", false);
-                        result.put("error", s);
+                        result.put("error", msg);
                         loadCall.resolve(result);
                         loadCall = null;
                     }
                 }
 
+                @Override
                 public void onAdShow() {
-                    Log.d(TAG, "广告显示");
+                    Log.d(TAG, "激励视频广告开始展示");
                 }
 
+                @Override
                 public void onAdClick() {
-                    Log.d(TAG, "广告点击");
+                    Log.d(TAG, "激励视频广告被点击");
                 }
 
+                @Override
                 public void onAdClose() {
-                    Log.d(TAG, "广告关闭");
+                    Log.d(TAG, "激励视频广告关闭");
                 }
 
-                public void onRewardVerify(boolean b, int i, String s) {
-                    Log.d(TAG, "奖励验证: " + b + " " + i + " " + s);
+                @Override
+                public void onAdComplete() {
+                    Log.d(TAG, "激励视频广告播放完成");
+                }
+
+                @Override
+                public void onRewardVerify(boolean verify) {
+                    Log.d(TAG, "奖励验证: " + verify);
                     if (showCall != null) {
                         JSObject result = new JSObject();
-                        result.put("rewarded", b);
-                        result.put("amount", i);
-                        result.put("name", s);
+                        result.put("rewarded", verify);
+                        result.put("amount", 10); // 默认奖励10金币
+                        result.put("name", "金币");
                         showCall.resolve(result);
                         showCall = null;
                     }
                 }
 
-                public void onAdVideoDownloadSuccess() {
-                    Log.d(TAG, "广告视频下载成功");
-                }
-
-                public void onAdVideoDownloadFailed() {
-                    Log.d(TAG, "广告视频下载失败");
-                }
-
-                public void onVideoComplete() {
-                    Log.d(TAG, "视频播放完成");
+                @Override
+                public void onAdSkip() {
+                    Log.d(TAG, "激励视频广告被跳过");
                 }
             });
 
             // 开始加载广告
-            rewardVideoAd.load();
+            rewardVideoAd.loadAd();
         } catch (Exception e) {
             Log.e(TAG, "加载广告失败: " + e.getMessage());
             if (loadCall != null) {
