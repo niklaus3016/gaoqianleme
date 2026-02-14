@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { goldService, recordService } from '../services/backendService';
+import { adService } from '../services/adService';
 import { CoinLog } from '../types';
 
 interface EarnModuleProps {
@@ -49,6 +50,13 @@ const EarnModule: React.FC<EarnModuleProps> = ({ userId }) => {
   };
 
   useEffect(() => {
+    // 初始化广告SDK
+    const initializeAdSDK = async () => {
+      await adService.init();
+    };
+    initializeAdSDK();
+    
+    // 加载金币信息
     loadGoldInfo();
     loadTodayGold();
     loadWithdrawals();
@@ -123,67 +131,86 @@ const EarnModule: React.FC<EarnModuleProps> = ({ userId }) => {
     const clickY = e.clientY - rect.top;
 
     try {
-      const response = await goldService.click(userId);
-      if (response.code === 200 && response.data) {
-        const { goldEarned, totalGold, todayGold, remainingSeconds } = response.data;
-        
-        setTotalCoins(totalGold);
-        setTodayCoins(todayGold);
-        
-        const newLog: CoinLog = {
-          id: Date.now().toString(),
-          amount: goldEarned,
-          time: new Date().toLocaleTimeString('zh-CN', { hour12: false })
-        };
-        setLogs(prev => [newLog, ...prev.slice(0, 49)]);
-
-        const id = Date.now();
-        setFloats(prev => [...prev, { id, x: clickX, y: clickY, amount: goldEarned }]);
-        
-        if (window.navigator.vibrate) {
-          window.navigator.vibrate(10);
+      // 加载激励视频广告
+      adService.loadRewardedAd((loadSuccess, loadError) => {
+        if (!loadSuccess) {
+          console.error('广告加载失败:', loadError);
+          setError('广告加载失败，请稍后重试');
+          setLoading(false);
+          return;
         }
 
-        setTimeout(() => {
-          setFloats(prev => prev.filter(f => f.id !== id));
-        }, 800);
-
-        speak(`恭喜你又赚了${goldEarned}金币`);
-
-        const cooldownSeconds = remainingSeconds > 0 ? remainingSeconds : 10;
-        setCooldown(cooldownSeconds);
-        const timer = setInterval(() => {
-          setCooldown(prev => {
-            if (prev <= 1) {
-              clearInterval(timer);
-              return 0;
+        // 显示激励视频广告
+        adService.showRewardedAd(
+          (showSuccess, showError) => {
+            if (!showSuccess) {
+              console.error('广告显示失败:', showError);
+              setError('广告显示失败，请稍后重试');
+              setLoading(false);
+              return;
             }
-            return prev - 1;
-          });
-        }, 1000);
+          },
+          async (rewarded, amount) => {
+            if (rewarded) {
+              // 广告观看完成，发放奖励
+              const goldEarned = amount || 10; // 默认奖励10金币
+              
+              try {
+                const response = await goldService.click(userId);
+                if (response.code === 200 && response.data) {
+                  const { totalGold, todayGold, remainingSeconds } = response.data;
+                  
+                  setTotalCoins(totalGold);
+                  setTodayCoins(todayGold);
+                  
+                  const newLog: CoinLog = {
+                    id: Date.now().toString(),
+                    amount: goldEarned,
+                    time: new Date().toLocaleTimeString('zh-CN', { hour12: false })
+                  };
+                  setLogs(prev => [newLog, ...prev.slice(0, 49)]);
 
-        await loadMonthlyGold();
-      }
-    } catch (error: any) {
-      console.error('Failed to earn gold:', error);
-      
-      if (error.message && error.message.includes('请等待')) {
-        const match = error.message.match(/(\d+)\s*秒/);
-        if (match) {
-          const remainingSeconds = parseInt(match[1]);
-          setCooldown(remainingSeconds);
-          const timer = setInterval(() => {
-            setCooldown(prev => {
-              if (prev <= 1) {
-                clearInterval(timer);
-                return 0;
+                  const id = Date.now();
+                  setFloats(prev => [...prev, { id, x: clickX, y: clickY, amount: goldEarned }]);
+                  
+                  if (window.navigator.vibrate) {
+                    window.navigator.vibrate(10);
+                  }
+
+                  setTimeout(() => {
+                    setFloats(prev => prev.filter(f => f.id !== id));
+                  }, 800);
+
+                  speak(`恭喜你又赚了${goldEarned}金币`);
+
+                  const cooldownSeconds = remainingSeconds > 0 ? remainingSeconds : 10;
+                  setCooldown(cooldownSeconds);
+                  const timer = setInterval(() => {
+                    setCooldown(prev => {
+                      if (prev <= 1) {
+                        clearInterval(timer);
+                        return 0;
+                      }
+                      return prev - 1;
+                    });
+                  }, 1000);
+
+                  await loadMonthlyGold();
+                }
+              } catch (error: any) {
+                console.error('发放奖励失败:', error);
+                setError('发放奖励失败，请稍后重试');
               }
-              return prev - 1;
-            });
-          }, 1000);
-        }
-      }
-    } finally {
+            } else {
+              setError('广告未完成观看，无法获得奖励');
+            }
+            setLoading(false);
+          }
+        );
+      });
+    } catch (error: any) {
+      console.error('看广告得金币失败:', error);
+      setError('看广告得金币失败，请稍后重试');
       setLoading(false);
     }
   };

@@ -57,6 +57,9 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    
+    // 百青藤广告SDK依赖
+    implementation 'com.bytedance.sdk:open_ad_sdk:7.4.1.4'
 }
 
 apply from: 'capacitor.build.gradle'

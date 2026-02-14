@@ -102,25 +102,25 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <div className="w-full max-w-[380px]">
           <div className="text-center mb-16">
             <div className="relative inline-block mb-8">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-[24px] blur-2xl opacity-30 animate-pulse"></div>
-              <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-[24px] shadow-2xl shadow-amber-500/20 animate-float">
-                <span className="text-5xl animate-coin">💰</span>
+              <div className="absolute inset-0 bg-gradient-to-br from-red-400 to-red-600 rounded-[24px] blur-2xl opacity-30 animate-pulse"></div>
+              <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-400 to-red-600 rounded-[24px] shadow-2xl shadow-red-500/20 animate-float">
+                <span className="text-5xl animate-coin">📝</span>
               </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-amber-300 to-amber-500 rounded-full flex items-center justify-center shadow-lg animate-sparkle">
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-red-300 to-red-500 rounded-full flex items-center justify-center shadow-lg animate-sparkle">
                 <span className="text-xs">✨</span>
               </div>
-              <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-gradient-to-br from-amber-300 to-amber-500 rounded-full flex items-center justify-center shadow-lg animate-sparkle" style={{ animationDelay: '0.5s' }}>
+              <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-gradient-to-br from-red-300 to-red-500 rounded-full flex items-center justify-center shadow-lg animate-sparkle" style={{ animationDelay: '0.5s' }}>
                 <span className="text-[8px]">✨</span>
               </div>
-              <div className="absolute top-1/2 -right-4 w-3 h-3 bg-gradient-to-br from-amber-300 to-amber-500 rounded-full flex items-center justify-center shadow-lg animate-sparkle" style={{ animationDelay: '1s' }}>
+              <div className="absolute top-1/2 -right-4 w-3 h-3 bg-gradient-to-br from-red-300 to-red-500 rounded-full flex items-center justify-center shadow-lg animate-sparkle" style={{ animationDelay: '1s' }}>
                 <span className="text-[6px]">✨</span>
               </div>
             </div>
-            <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 mb-3 tracking-tight drop-shadow-2xl" style={{ textShadow: '0 0 40px rgba(251, 191, 36, 0.5)' }}>
-              搞钱了么
+            <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-300 via-pink-400 to-red-500 mb-3 tracking-tight drop-shadow-2xl" style={{ textShadow: '0 0 40px rgba(249, 168, 212, 0.5)' }}>
+              荔枝记账
             </h1>
             <p className="text-lg text-gray-400 font-medium">
-              生命不息·搞钱不止
+              轻松记账·理财有方
             </p>
           </div>
 
