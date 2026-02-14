@@ -2,9 +2,11 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        // 百度Maven仓库（Maven集成必需）
+        maven { url 'https://mvn.baidu.com/nexus/content/repositories/releases/' }
     }
     dependencies {
-        // 适配Gradle 8.14.3的插件版本（官方推荐）
+        // 适配Gradle 8.14.3的插件版本
         classpath 'com.android.tools.build:gradle:8.0.2'
     }
 }
@@ -13,6 +15,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://mvn.baidu.com/nexus/content/repositories/releases/' }
     }
 }
 
