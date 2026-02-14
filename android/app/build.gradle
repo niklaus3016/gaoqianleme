@@ -72,6 +72,8 @@ repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
+    // 添加百度SDK仓库
+    maven { url 'https://mvn.baidu.com/nexus/content/repositories/releases/' }
 }
 
 dependencies {
