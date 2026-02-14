@@ -62,7 +62,7 @@ dependencies {
     implementation project(':capacitor-cordova-android-plugins')
     
     // 百青藤广告SDK依赖
-    implementation 'com.bytedance.sdk:open_ad_sdk:7.3.0.0'
+    implementation 'com.bytedance.sdk:open_ad_sdk:7.2.0.0'
 }
 
 apply from: 'capacitor.build.gradle'
