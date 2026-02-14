@@ -1,8 +1,36 @@
 // 百青藤广告服务
 import { registerPlugin } from '@capacitor/core';
 
+// 百青藤广告插件类型定义
+interface PangleAdPlugin {
+  init(options: {
+    appId: string;
+    debug: boolean;
+  }): Promise<{
+    success: boolean;
+  }>;
+  
+  loadRewardedAd(options: {
+    adUnitId: string;
+  }): Promise<{
+    success: boolean;
+    error?: string;
+  }>;
+  
+  showRewardedAd(options: {}): Promise<{
+    rewarded: boolean;
+    amount?: number;
+    name?: string;
+    error?: string;
+  }>;
+  
+  isAdLoaded(options: {}): Promise<{
+    isLoaded: boolean;
+  }>;
+}
+
 // 注册百青藤广告插件
-const PangleAd = registerPlugin('PangleAd');
+const PangleAd = registerPlugin<PangleAdPlugin>('PangleAd');
 
 // 广告位ID
 const AD_UNIT_ID = '19100351';
