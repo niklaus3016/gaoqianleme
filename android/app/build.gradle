@@ -75,9 +75,11 @@ repositories {
 }
 
 dependencies {
-    // 仅保留Java基础依赖
+    // 添加必要的AndroidX依赖，解决百度SDK工具包的资源链接错误
     implementation 'androidx.core:core-ktx:1.12.0' // 兼容AndroidX，纯Java也可使用
     implementation 'androidx.appcompat:appcompat:1.6.1'
+    // 添加Material Design组件，解决TabLayout相关属性错误
+    implementation 'com.google.android.material:material:1.9.0'
 
     // 9.432版本百度SDK本地依赖
     implementation files('libs/Baidu_MobAds_SDK-release_v9.432.aar')
