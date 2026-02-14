@@ -11,8 +11,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.gaoqianleme.app"
-    // 直接指定compileSdkVersion，避免读取根目录ext失败
-    compileSdkVersion 34
+    // 更新compileSdkVersion到36，以满足依赖要求
+    compileSdkVersion 36
     buildToolsVersion "34.0.0"
 
     defaultConfig {

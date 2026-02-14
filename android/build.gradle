@@ -11,8 +11,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // 仅保留Android Gradle插件，移除Kotlin插件
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        // 更新Android Gradle插件版本到8.9.1，支持compileSdk 36
+        classpath 'com.android.tools.build:gradle:8.9.1'
     }
 }
 
