@@ -4,8 +4,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // 适配Gradle 8.14.3的插件版本
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        // 升级到8.9.1（匹配core-ktx:1.17.0的要求）
+        classpath 'com.android.tools.build:gradle:8.9.1'
     }
 }
 

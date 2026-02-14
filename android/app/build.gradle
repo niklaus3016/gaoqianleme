@@ -10,14 +10,15 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.gaoqianleme.app"
-    compileSdkVersion 34
-    buildToolsVersion "34.0.0"
+    // 升级到36（匹配core-ktx:1.17.0要求）
+    compileSdkVersion 36
+    buildToolsVersion "36.0.0"
 
     defaultConfig {
         applicationId "com.gaoqianleme.app"
         // 保持minSdkVersion 24，以满足Capacitor Android库的要求
         minSdkVersion 24
-        targetSdkVersion 34
+        targetSdkVersion 36
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -65,9 +66,9 @@ repositories {
 }
 
 dependencies {
-    // 直接写死版本号，不使用任何变量
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core-ktx:1.12.0'
+    // 基础依赖（版本匹配compileSdk 36）
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core-ktx:1.17.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'androidx.core:core-splashscreen:1.0.1'
 
