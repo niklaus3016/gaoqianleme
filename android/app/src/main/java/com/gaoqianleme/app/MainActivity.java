@@ -2,7 +2,7 @@ package com.gaoqianleme.app;
 
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
-import com.bytedance.pangle.PangleAdPlugin;
+import com.baidu.union.BaiduAdPlugin;
 import android.os.Bundle;
 
 public class MainActivity extends BridgeActivity {
@@ -10,7 +10,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // 注册百青藤广告插件
-        registerPlugin(PangleAdPlugin.class);
+        // 注册百度联盟广告插件
+        registerPlugin(BaiduAdPlugin.class);
     }
 }

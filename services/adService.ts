@@ -1,13 +1,14 @@
-// 百青藤广告服务
+// 百度联盟广告服务
 import { registerPlugin } from '@capacitor/core';
 
-// 百青藤广告插件类型定义
-interface PangleAdPlugin {
+// 百度联盟广告插件类型定义
+interface BaiduAdPlugin {
   init(options: {
     appId: string;
     debug: boolean;
   }): Promise<{
     success: boolean;
+    version?: string;
   }>;
   
   loadRewardedAd(options: {
@@ -29,8 +30,8 @@ interface PangleAdPlugin {
   }>;
 }
 
-// 注册百青藤广告插件
-const PangleAd = registerPlugin<PangleAdPlugin>('PangleAd');
+// 注册百度联盟广告插件
+const BaiduAd = registerPlugin<BaiduAdPlugin>('BaiduAd');
 
 // 广告位ID
 const AD_UNIT_ID = '19100351';
@@ -65,19 +66,19 @@ class AdService {
   // 初始化广告SDK
   async init(): Promise<void> {
     try {
-      if (PangleAd) {
-        const result = await PangleAd.init({
+      if (BaiduAd) {
+        const result = await BaiduAd.init({
           appId: APP_ID,
           debug: true
         });
         this.isInitialized = result.success;
-        console.log('百青藤广告SDK初始化成功:', result);
+        console.log('百度联盟广告SDK初始化成功:', result);
       } else {
-        console.error('百青藤广告插件未找到');
+        console.error('百度联盟广告插件未找到');
         this.isInitialized = false;
       }
     } catch (error) {
-      console.error('百青藤广告SDK初始化失败:', error);
+      console.error('百度联盟广告SDK初始化失败:', error);
       this.isInitialized = false;
     }
   }
@@ -87,7 +88,7 @@ class AdService {
     this.loadCallback = callback;
     
     try {
-      if (!PangleAd) {
+      if (!BaiduAd) {
         if (this.loadCallback) {
           this.loadCallback(false, '广告插件未找到');
           this.loadCallback = null;
@@ -99,7 +100,7 @@ class AdService {
         await this.init();
       }
 
-      const result = await PangleAd.loadRewardedAd({
+      const result = await BaiduAd.loadRewardedAd({
         adUnitId: AD_UNIT_ID
       });
 
@@ -136,7 +137,7 @@ class AdService {
     }
 
     try {
-      if (!PangleAd) {
+      if (!BaiduAd) {
         if (this.showCallback) {
           this.showCallback(false, '广告插件未找到');
           this.showCallback = null;
@@ -146,7 +147,7 @@ class AdService {
 
       this.adStatus.isShowing = true;
       
-      const result = await PangleAd.showRewardedAd({});
+      const result = await BaiduAd.showRewardedAd({});
       
       this.adStatus.isShowing = false;
       this.adStatus.isLoaded = false;
@@ -184,8 +185,8 @@ class AdService {
   // 检查广告是否加载
   async isAdLoaded(): Promise<boolean> {
     try {
-      if (PangleAd) {
-        const result = await PangleAd.isAdLoaded({});
+      if (BaiduAd) {
+        const result = await BaiduAd.isAdLoaded({});
         return result.isLoaded;
       }
     } catch (error) {
