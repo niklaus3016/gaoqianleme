@@ -32,13 +32,15 @@ public class BaiduAdPlugin extends Plugin {
         }
 
         try {
-            // 初始化百度联盟SDK（9.42.2版本正确写法）
+            // 初始化百度SDK（9.432版本官方写法）
             AdSettings.setAppId(appId);
-            // 可选：设置测试模式（测试阶段开启）
+            // 测试模式（上线前务必关闭）
             AdSettings.setTestMode(debug);
+            // 可选：设置渠道（如应用宝、华为等）
+            AdSettings.setChannelId("test_channel");
             
             isInitialized = true;
-            Log.d(TAG, "百度SDK初始化完成（9.42.2版本）");
+            Log.d(TAG, "百度SDK初始化完成（9.432版本）");
 
             JSObject result = new JSObject();
             result.put("success", true);
@@ -73,23 +75,26 @@ public class BaiduAdPlugin extends Plugin {
                 return;
             }
 
-            // 加载激励视频广告（9.42.2版本正确写法）
-            // 9.42.2版本RewardVideoAd构造函数：Context + 广告位ID + 监听器
+            // 加载激励视频广告（9.432版本官方标准写法）
+            // 9.432版本RewardVideoAd构造函数：Context + 广告位ID + 监听器
             rewardVideoAd = new RewardVideoAd(getActivity(), adUnitId, new RewardVideoAdListener() {
+                // 广告加载成功
                 @Override
                 public void onAdLoaded() {
-                    Log.d(TAG, "激励视频广告加载成功");
+                    Log.d(TAG, "[百度广告] 激励视频加载成功");
                     if (loadCall != null) {
                         JSObject result = new JSObject();
                         result.put("success", true);
                         loadCall.resolve(result);
                         loadCall = null;
                     }
+                    // 9.432版本加载成功后自动展示，无需手动show()
                 }
 
+                // 广告加载失败（9.432版本参数为String类型）
                 @Override
                 public void onAdFailed(String reason) {
-                    Log.e(TAG, "激励视频广告加载失败：" + reason);
+                    Log.e(TAG, "[百度广告] 激励视频加载失败：" + reason);
                     if (loadCall != null) {
                         JSObject result = new JSObject();
                         result.put("success", false);
@@ -100,30 +105,35 @@ public class BaiduAdPlugin extends Plugin {
                     rewardVideoAd = null;
                 }
 
+                // 广告展示
                 @Override
                 public void onAdShow() {
-                    Log.d(TAG, "激励视频广告开始展示");
+                    Log.d(TAG, "[百度广告] 激励视频开始展示");
                 }
 
+                // 广告点击
                 @Override
                 public void onAdClick() {
-                    Log.d(TAG, "激励视频广告被点击");
+                    Log.d(TAG, "[百度广告] 激励视频被点击");
                 }
 
+                // 广告关闭
                 @Override
                 public void onAdClose() {
-                    Log.d(TAG, "激励视频广告关闭");
-                    rewardVideoAd = null;
+                    Log.d(TAG, "[百度广告] 激励视频已关闭");
+                    rewardVideoAd = null; // 释放资源
                 }
 
+                // 广告播放完成
                 @Override
                 public void onAdComplete() {
-                    Log.d(TAG, "激励视频广告播放完成");
+                    Log.d(TAG, "[百度广告] 激励视频播放完成");
                 }
 
+                // 奖励验证（核心：发放奖励的依据）
                 @Override
                 public void onRewardVerify(boolean verify) {
-                    Log.d(TAG, "奖励验证: " + verify);
+                    Log.d(TAG, "[百度广告] 奖励验证: " + verify);
                     if (showCall != null) {
                         JSObject result = new JSObject();
                         result.put("rewarded", verify);
@@ -134,13 +144,14 @@ public class BaiduAdPlugin extends Plugin {
                     }
                 }
 
+                // 广告跳过
                 @Override
                 public void onAdSkip() {
-                    Log.d(TAG, "激励视频广告被跳过");
+                    Log.d(TAG, "[百度广告] 激励视频被跳过");
                 }
             });
 
-            // 9.42.2版本：创建RewardVideoAd实例后自动加载，无loadAd()方法
+            // 9.432版本：创建实例后自动加载，无loadAd()方法
         } catch (Exception e) {
             Log.e(TAG, "加载广告失败: " + e.getMessage());
             if (loadCall != null) {
