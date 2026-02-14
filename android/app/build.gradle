@@ -58,8 +58,9 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
     
-    // 百度联盟SDK依赖
-    implementation 'com.baidu:mobads:9.42.2'
+    // 引入本地百度SDK
+    implementation files('libs/Baidu_MobAds_SDK-release_v9.432.aar')
+    implementation files('libs/Baidu_MobAds_Tools_SDK-release_v3.1.aar')
 }
 
 apply from: 'capacitor.build.gradle'
