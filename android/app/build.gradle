@@ -1,5 +1,7 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    // 移除kotlin-android插件，仅保留安卓应用插件
+    id 'com.android.application'
+}
 
 def keystorePropertiesFile = file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -9,12 +11,14 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.gaoqianleme.app"
-    compileSdk = rootProject.ext.compileSdkVersion
+    // 直接指定compileSdkVersion，避免读取根目录ext失败
+    compileSdkVersion 34
     buildToolsVersion "34.0.0"
+
     defaultConfig {
         applicationId "com.gaoqianleme.app"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion 21
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -44,24 +48,21 @@ android {
             minifyEnabled false
         }
     }
-    
-    // 必须开启Java 8
+
+    // Java 8支持（必须保留）
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-    
+
     // 支持本地libs目录
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
         }
     }
-    
-    // 解决Manifest合并冲突（百青藤SDK的allowBackup冲突）
+
+    // 解决Manifest合并冲突
     packagingOptions {
         pickFirst 'AndroidManifest.xml'
     }
@@ -74,12 +75,11 @@ repositories {
 }
 
 dependencies {
-    // 基础依赖
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.12.0'
+    // 仅保留Java基础依赖
+    implementation 'androidx.core:core-ktx:1.12.0' // 兼容AndroidX，纯Java也可使用
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
-    // 9.432版本百度SDK（本地依赖，零网络）
+    // 9.432版本百度SDK本地依赖
     implementation files('libs/Baidu_MobAds_SDK-release_v9.432.aar')
     implementation files('libs/Baidu_MobAds_Tools_SDK-release_v3.1.aar')
     
