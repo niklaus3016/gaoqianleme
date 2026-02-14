@@ -4,12 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import com.baidu.mobads.sdk.api.AdSettings;
-import com.baidu.mobads.sdk.api.BaiduNativeAd;
-import com.baidu.mobads.sdk.api.BaiduNativeAdManager;
-import com.baidu.mobads.sdk.api.BaiduNativeAdView;
-import com.baidu.mobads.sdk.api.FeedAdRequestParameters;
 import com.baidu.mobads.sdk.api.RewardVideoAd;
-import com.baidu.mobads.sdk.api.RewardVideoAdListener;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -36,8 +31,7 @@ public class BaiduAdPlugin extends Plugin {
 
         try {
             // 初始化百度联盟SDK
-            AdSettings.setAppSid(appId);
-            AdSettings.setDebugMode(debug);
+            AdSettings.setAppId(appId);
             
             // 获取SDK版本号
             String sdkVersion = AdSettings.getSDKVersion();
@@ -66,8 +60,8 @@ public class BaiduAdPlugin extends Plugin {
 
         try {
             // 加载激励视频广告
-            rewardVideoAd = new RewardVideoAd(getActivity(), adUnitId, new RewardVideoAdListener() {
-                @Override
+            rewardVideoAd = new RewardVideoAd(getActivity(), adUnitId);
+            rewardVideoAd.setListener(new RewardVideoAd.RewardVideoAdListener() {
                 public void onAdLoaded() {
                     Log.d(TAG, "广告加载成功");
                     if (loadCall != null) {
@@ -78,7 +72,6 @@ public class BaiduAdPlugin extends Plugin {
                     }
                 }
 
-                @Override
                 public void onAdFailed(String s) {
                     Log.e(TAG, "广告加载失败: " + s);
                     if (loadCall != null) {
@@ -90,22 +83,18 @@ public class BaiduAdPlugin extends Plugin {
                     }
                 }
 
-                @Override
                 public void onAdShow() {
                     Log.d(TAG, "广告显示");
                 }
 
-                @Override
                 public void onAdClick() {
                     Log.d(TAG, "广告点击");
                 }
 
-                @Override
                 public void onAdClose() {
                     Log.d(TAG, "广告关闭");
                 }
 
-                @Override
                 public void onRewardVerify(boolean b, int i, String s) {
                     Log.d(TAG, "奖励验证: " + b + " " + i + " " + s);
                     if (showCall != null) {
@@ -118,17 +107,14 @@ public class BaiduAdPlugin extends Plugin {
                     }
                 }
 
-                @Override
                 public void onAdVideoDownloadSuccess() {
                     Log.d(TAG, "广告视频下载成功");
                 }
 
-                @Override
                 public void onAdVideoDownloadFailed() {
                     Log.d(TAG, "广告视频下载失败");
                 }
 
-                @Override
                 public void onVideoComplete() {
                     Log.d(TAG, "视频播放完成");
                 }
