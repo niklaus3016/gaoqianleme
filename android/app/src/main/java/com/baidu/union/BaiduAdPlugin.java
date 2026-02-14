@@ -3,10 +3,9 @@ package com.baidu.union;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import com.baidu.mobads.sdk.api.BaiduAdManager;
-import com.baidu.mobads.sdk.api.BaiduAdInitListener;
-import com.baidu.mobads.sdk.api.RewardVideoAd;
-import com.baidu.mobads.sdk.api.RewardVideoAdListener;
+import com.baidu.mobads.AdSettings;
+import com.baidu.mobads.rewardvideo.RewardVideoAd;
+import com.baidu.mobads.rewardvideo.RewardVideoAdListener;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -34,29 +33,17 @@ public class BaiduAdPlugin extends Plugin {
 
         try {
             // 初始化百度联盟SDK（9.42.2版本正确写法）
-            BaiduAdManager.getInstance().init(getContext(), appId, new BaiduAdInitListener() {
-                @Override
-                public void onSuccess() {
-                    Log.d(TAG, "百度SDK初始化成功");
-                    isInitialized = true;
-                    
-                    // 获取SDK版本号
-                    String sdkVersion = BaiduAdManager.getInstance().getSDKVersion();
-                    Log.d(TAG, "百度联盟SDK版本号: " + sdkVersion);
+            AdSettings.setAppId(appId);
+            // 可选：设置测试模式（测试阶段开启）
+            AdSettings.setTestMode(debug);
+            
+            isInitialized = true;
+            Log.d(TAG, "百度SDK初始化完成（9.42.2版本）");
 
-                    JSObject result = new JSObject();
-                    result.put("success", true);
-                    result.put("version", sdkVersion);
-                    call.resolve(result);
-                }
-
-                @Override
-                public void onFail(int code, String msg) {
-                    Log.e(TAG, "百度SDK初始化失败：code=" + code + ", msg=" + msg);
-                    isInitialized = false;
-                    call.reject("初始化失败: " + msg);
-                }
-            });
+            JSObject result = new JSObject();
+            result.put("success", true);
+            result.put("version", AdSettings.getSDKVersion());
+            call.resolve(result);
         } catch (Exception e) {
             Log.e(TAG, "初始化失败: " + e.getMessage());
             call.reject("初始化失败: " + e.getMessage());
@@ -87,6 +74,7 @@ public class BaiduAdPlugin extends Plugin {
             }
 
             // 加载激励视频广告（9.42.2版本正确写法）
+            // 9.42.2版本RewardVideoAd构造函数：Context + 广告位ID + 监听器
             rewardVideoAd = new RewardVideoAd(getActivity(), adUnitId, new RewardVideoAdListener() {
                 @Override
                 public void onAdLoaded() {
@@ -100,15 +88,16 @@ public class BaiduAdPlugin extends Plugin {
                 }
 
                 @Override
-                public void onAdFailed(int code, String msg) {
-                    Log.e(TAG, "激励视频广告加载失败：code=" + code + ", msg=" + msg);
+                public void onAdFailed(String reason) {
+                    Log.e(TAG, "激励视频广告加载失败：" + reason);
                     if (loadCall != null) {
                         JSObject result = new JSObject();
                         result.put("success", false);
-                        result.put("error", msg);
+                        result.put("error", reason);
                         loadCall.resolve(result);
                         loadCall = null;
                     }
+                    rewardVideoAd = null;
                 }
 
                 @Override
@@ -124,6 +113,7 @@ public class BaiduAdPlugin extends Plugin {
                 @Override
                 public void onAdClose() {
                     Log.d(TAG, "激励视频广告关闭");
+                    rewardVideoAd = null;
                 }
 
                 @Override
@@ -150,8 +140,7 @@ public class BaiduAdPlugin extends Plugin {
                 }
             });
 
-            // 开始加载广告
-            rewardVideoAd.loadAd();
+            // 9.42.2版本：创建RewardVideoAd实例后自动加载，无loadAd()方法
         } catch (Exception e) {
             Log.e(TAG, "加载广告失败: " + e.getMessage());
             if (loadCall != null) {
