@@ -5,6 +5,8 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        // 关键：添加百度SDK仓库
+        maven { url 'https://mvn.baidu.com/nexus/content/repositories/releases/' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.13.0'
@@ -21,6 +23,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // 关键：allprojects里也要加百度仓库
+        maven { url 'https://mvn.baidu.com/nexus/content/repositories/releases/' }
     }
 }
 
