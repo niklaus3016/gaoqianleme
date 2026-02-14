@@ -1,5 +1,5 @@
 plugins {
-    // 移除kotlin-android插件，仅保留安卓应用插件
+    // 仅保留安卓应用插件，移除所有Kotlin相关配置
     id 'com.android.application'
 }
 
@@ -11,12 +11,13 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.gaoqianleme.app"
-    // 更新compileSdkVersion到36，以满足依赖要求
-    compileSdkVersion 36
+    // 必须直接指定，不要依赖根目录ext
+    compileSdkVersion 34
     buildToolsVersion "34.0.0"
 
     defaultConfig {
         applicationId "com.gaoqianleme.app"
+        // 保持minSdkVersion 24，以满足Capacitor Android库的要求
         minSdkVersion 24
         targetSdkVersion 34
         versionCode 1
@@ -40,8 +41,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
         debug {
@@ -49,20 +50,13 @@ android {
         }
     }
 
-    // Java 8支持（必须保留）
+    // 百度SDK必须的Java 8支持
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    // 支持本地libs目录
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['libs']
-        }
-    }
-
-    // 解决Manifest合并冲突
+    // 解决Manifest合并冲突（百度SDK的allowBackup=false冲突）
     packagingOptions {
         pickFirst 'AndroidManifest.xml'
     }
@@ -72,23 +66,17 @@ repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
-    // 添加百度SDK仓库
-    maven { url 'https://mvn.baidu.com/nexus/content/repositories/releases/' }
 }
 
 dependencies {
-    // 添加必要的AndroidX依赖，解决百度SDK工具包的资源链接错误
-    implementation 'androidx.core:core-ktx:1.12.0' // 兼容AndroidX，纯Java也可使用
+    // 仅保留基础AndroidX依赖（纯Java项目足够）
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    // 添加Material Design组件，解决TabLayout相关属性错误
-    implementation 'com.google.android.material:material:1.9.0'
-    // 添加百度SDK需要的AndroidX依赖（对应support库28.0.0+）
-    implementation 'androidx.recyclerview:recyclerview:1.3.0' // 对应com.android.support:recyclerview-v7:28.0.0
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0' // 对应com.android.support:support-v4:28.0.0
+    implementation 'androidx.core:core-ktx:1.12.0'
 
-    // 暂时移除百度联盟SDK依赖，避免R8混淆失败
-    // implementation 'com.baidu:mobads:9.42.2'
-    
+    // 本地引入百度SDK（绝对路径，避免路径解析错误）
+    implementation files('libs/Baidu_MobAds_SDK-release_v9.432.aar')
+    implementation files('libs/Baidu_MobAds_Tools_SDK-release_v3.1.aar')
+
     // Capacitor相关依赖
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
