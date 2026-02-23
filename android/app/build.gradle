@@ -73,9 +73,7 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.1'
     implementation 'com.google.android.material:material:1.9.0'
 
-    // 本地AAR依赖（匹配重命名后的文件，无特殊字符）
-    implementation files('libs/mobads-9.432.aar')
-    implementation files('libs/mobads-tools-3.1.aar')
+
 
     // Capacitor相关依赖
     implementation fileTree(include: ['*.jar'], dir: 'libs')

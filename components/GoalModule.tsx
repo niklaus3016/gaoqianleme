@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { targetService, recordService } from '../services/backendService';
 import { Solar, Lunar } from 'lunar-javascript';
-import { getDailyQuote } from '../quotes';
 
 interface GoalModuleProps {
   userId: string;
@@ -126,8 +125,6 @@ const GoalModule: React.FC<GoalModuleProps> = ({ userId }) => {
 
   const progress = annualGoal && annualGoal > 0 ? (currentEarned / annualGoal) * 100 : 0;
   const remaining = annualGoal ? annualGoal - currentEarned : 0;
-  
-  const dailyQuote = getDailyQuote();
 
   return (
     <div className="flex flex-col space-y-3 pb-4 animate-in fade-in slide-in-from-bottom-6 duration-700">
