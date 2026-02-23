@@ -5,87 +5,210 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [loginType, setLoginType] = useState<'phone' | 'employee'>('phone');
-  const [phone, setPhone] = useState('');
-  const [code, setCode] = useState('');
-  const [employeeId, setEmployeeId] = useState('');
+  const [loginType, setLoginType] = useState<'login' | 'register'>('login');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sendingCode, setSendingCode] = useState(false);
-  const [countdown, setCountdown] = useState(0);
   const [error, setError] = useState('');
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
-  const handleSendCode = async () => {
-    if (!phone.trim()) {
-      setError('请输入手机号');
-      return;
-    }
-    if (!/^1[3-9]\d{9}$/.test(phone.trim())) {
-      setError('请输入正确的手机号');
-      return;
-    }
-
-    setSendingCode(true);
-    setError('');
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setCountdown(60);
-      const timer = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } catch (err) {
-      setError('发送验证码失败，请重试');
-    } finally {
-      setSendingCode(false);
-    }
-  };
-
-  const handlePhoneLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
-    if (!phone.trim()) {
-      setError('请输入手机号');
+    if (!username.trim()) {
+      setError('请输入用户名');
       return;
     }
-    if (!code.trim()) {
-      setError('请输入验证码');
+    if (!password.trim()) {
+      setError('请输入密码');
       return;
     }
 
     setLoading(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      onLogin('phone_' + phone.trim());
-    } catch (err) {
-      setError('登录失败，请重试');
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), password })
+      });
+      
+      if (!response.ok) {
+        setError('登录失败，请检查网络连接');
+        return;
+      }
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        setError('登录失败，服务器返回数据格式错误');
+        return;
+      }
+      
+      if (data.code === 200) {
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('userInfo', JSON.stringify(data.data.userInfo));
+        onLogin(data.data.userInfo.userId);
+      } else {
+        setError(data.message || '登录失败，请重试');
+      }
+    } catch (err: any) {
+      setError('登录失败，请检查网络连接');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEmployeeLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
-    if (!employeeId.trim()) {
-      setError('请输入员工号');
+    if (!username.trim()) {
+      setError('请输入用户名');
+      return;
+    }
+    if (!password.trim()) {
+      setError('请输入密码');
+      return;
+    }
+    if (password.length < 6) {
+      setError('密码长度至少6位');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('两次输入的密码不一致');
       return;
     }
 
     setLoading(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      onLogin(employeeId.trim());
-    } catch (err) {
-      setError('登录失败，请重试');
+      const response = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), password })
+      });
+      
+      if (!response.ok) {
+        setError('注册失败，请检查网络连接');
+        return;
+      }
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        setError('注册失败，服务器返回数据格式错误');
+        return;
+      }
+      
+      if (data.code === 200) {
+        // 注册成功后自动登录
+        try {
+          const loginResponse = await fetch('http://localhost:3000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username.trim(), password })
+          });
+          
+          if (!loginResponse.ok) {
+            setError('注册成功但登录失败，请手动登录');
+            return;
+          }
+          
+          let loginData;
+          try {
+            loginData = await loginResponse.json();
+          } catch (jsonError) {
+            setError('注册成功但登录失败，服务器返回数据格式错误');
+            return;
+          }
+          
+          if (loginData.code === 200) {
+            localStorage.setItem('token', loginData.data.token);
+            localStorage.setItem('userInfo', JSON.stringify(loginData.data.userInfo));
+            onLogin(loginData.data.userInfo.userId);
+          } else {
+            setError('注册成功但登录失败，请手动登录');
+          }
+        } catch (loginError) {
+          setError('注册成功但登录失败，请手动登录');
+        }
+      } else {
+        setError(data.message || '注册失败，请重试');
+      }
+    } catch (err: any) {
+      setError('注册失败，请检查网络连接');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    setLoading(true);
+    
+    try {
+      // 生成随机用户名和密码
+      const guestUsername = 'guest_' + Date.now();
+      const guestPassword = 'guest' + Date.now();
+      
+      // 注册游客账号
+      const registerResponse = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: guestUsername, password: guestPassword })
+      });
+      
+      if (!registerResponse.ok) {
+        setError('游客登录失败，请检查网络连接');
+        return;
+      }
+      
+      let registerData;
+      try {
+        registerData = await registerResponse.json();
+      } catch (jsonError) {
+        setError('游客登录失败，服务器返回数据格式错误');
+        return;
+      }
+      
+      if (registerData.code === 200) {
+        // 登录游客账号
+        const loginResponse = await fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: guestUsername, password: guestPassword })
+        });
+        
+        if (!loginResponse.ok) {
+          setError('游客登录失败，请检查网络连接');
+          return;
+        }
+        
+        let loginData;
+        try {
+          loginData = await loginResponse.json();
+        } catch (jsonError) {
+          setError('游客登录失败，服务器返回数据格式错误');
+          return;
+        }
+        
+        if (loginData.code === 200) {
+          localStorage.setItem('token', loginData.data.token);
+          localStorage.setItem('userInfo', JSON.stringify(loginData.data.userInfo));
+          onLogin(loginData.data.userInfo.userId);
+        } else {
+          setError('游客登录失败，请重试');
+        }
+      } else {
+        setError('游客登录失败，请重试');
+      }
+    } catch (err: any) {
+      setError('游客登录失败，请检查网络连接');
     } finally {
       setLoading(false);
     }
@@ -120,46 +243,45 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               荔枝记账
             </h1>
             <p className="text-lg text-gray-400 font-medium">
-              轻松记账·理财有方
+              立志赚钱用荔枝记账
             </p>
           </div>
 
           <div className="space-y-8">
             <div className="flex bg-white/5 backdrop-blur-xl rounded-2xl p-1.5 border border-white/10">
               <button
-                onClick={() => setLoginType('phone')}
+                onClick={() => setLoginType('login')}
                 className={`flex-1 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
-                  loginType === 'phone'
+                  loginType === 'login'
                     ? 'bg-white text-black'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                手机号登录
+                登录
               </button>
               <button
-                onClick={() => setLoginType('employee')}
+                onClick={() => setLoginType('register')}
                 className={`flex-1 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
-                  loginType === 'employee'
+                  loginType === 'register'
                     ? 'bg-white text-black'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                员工号登录
+                注册
               </button>
             </div>
 
-            {loginType === 'phone' ? (
-              <form onSubmit={handlePhoneLogin} className="space-y-6">
+            {loginType === 'login' ? (
+              <form onSubmit={handleLogin} className="space-y-6">
                 <div className="space-y-3">
                   <label className="text-sm font-medium text-gray-400">
-                    手机号码
+                    用户名
                   </label>
                   <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="请输入手机号"
-                    maxLength={11}
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="请输入用户名"
                     className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/10 transition-all font-medium"
                     disabled={loading}
                   />
@@ -167,31 +289,16 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
                 <div className="space-y-3">
                   <label className="text-sm font-medium text-gray-400">
-                    验证码
+                    密码
                   </label>
-                  <div className="flex space-x-3">
-                    <input
-                      type="text"
-                      value={code}
-                      onChange={(e) => setCode(e.target.value)}
-                      placeholder="请输入验证码"
-                      maxLength={6}
-                      className="flex-1 px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/10 transition-all font-medium"
-                      disabled={loading}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleSendCode}
-                      disabled={sendingCode || countdown > 0 || !phone.trim()}
-                      className={`px-6 rounded-2xl font-medium text-sm whitespace-nowrap transition-all duration-300 ${
-                        sendingCode || countdown > 0 || !phone.trim()
-                          ? 'bg-white/5 text-gray-500 cursor-not-allowed border border-white/10'
-                          : 'bg-white text-black hover:bg-gray-100'
-                      }`}
-                    >
-                      {countdown > 0 ? `${countdown}s` : sendingCode ? '发送中...' : '获取验证码'}
-                    </button>
-                  </div>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="请输入密码"
+                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/10 transition-all font-medium"
+                    disabled={loading}
+                  />
                 </div>
 
                 {error && (
@@ -202,9 +309,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
                 <button
                   type="submit"
-                  disabled={loading || !phone.trim() || !code.trim()}
+                  disabled={loading || !username.trim() || !password.trim()}
                   className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-300 ${
-                    loading || !phone.trim() || !code.trim()
+                    loading || !username.trim() || !password.trim()
                       ? 'bg-white/10 text-gray-500 cursor-not-allowed'
                       : 'bg-white text-black hover:bg-gray-100 hover:scale-[1.02] active:scale-[0.98]'
                   }`}
@@ -218,21 +325,68 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     '立即登录'
                   )}
                 </button>
+
+                <button
+                  type="button"
+                  onClick={handleGuestLogin}
+                  disabled={loading}
+                  className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-300 ${
+                    loading
+                      ? 'bg-white/10 text-gray-500 cursor-not-allowed'
+                      : 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white hover:scale-[1.02] active:scale-[0.98]'
+                  }`}
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center space-x-2">
+                      <span className="w-4 h-4 border-2 border-gray-300 border-t-gray-400 rounded-full animate-spin"></span>
+                      <span>登录中...</span>
+                    </span>
+                  ) : (
+                    '游客登录'
+                  )}
+                </button>
               </form>
             ) : (
-              <form onSubmit={handleEmployeeLogin} className="space-y-6">
+              <form onSubmit={handleRegister} className="space-y-6">
                 <div className="space-y-3">
                   <label className="text-sm font-medium text-gray-400">
-                    员工编号
+                    用户名
                   </label>
                   <input
                     type="text"
-                    value={employeeId}
-                    onChange={(e) => setEmployeeId(e.target.value)}
-                    placeholder="请输入员工号"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="请输入用户名"
                     className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/10 transition-all font-medium"
                     disabled={loading}
-                    autoFocus
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-400">
+                    密码
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="请输入密码（至少6位）"
+                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/10 transition-all font-medium"
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-400">
+                    确认密码
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="请再次输入密码"
+                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/10 transition-all font-medium"
+                    disabled={loading}
                   />
                 </div>
 
@@ -244,9 +398,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
                 <button
                   type="submit"
-                  disabled={loading || !employeeId.trim()}
+                  disabled={loading || !username.trim() || !password.trim() || !confirmPassword.trim()}
                   className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-300 ${
-                    loading || !employeeId.trim()
+                    loading || !username.trim() || !password.trim() || !confirmPassword.trim()
                       ? 'bg-white/10 text-gray-500 cursor-not-allowed'
                       : 'bg-white text-black hover:bg-gray-100 hover:scale-[1.02] active:scale-[0.98]'
                   }`}
@@ -254,10 +408,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                   {loading ? (
                     <span className="flex items-center justify-center space-x-2">
                       <span className="w-4 h-4 border-2 border-gray-300 border-t-black rounded-full animate-spin"></span>
-                      <span>登录中...</span>
+                      <span>注册中...</span>
                     </span>
                   ) : (
-                    '立即登录'
+                    '立即注册'
                   )}
                 </button>
               </form>
@@ -266,15 +420,114 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
           <div className="mt-12 pt-8 border-t border-white/10">
             <div className="flex items-center justify-center space-x-8 text-gray-500">
-              <span className="text-xs font-medium">功能介绍</span>
+              <button 
+                onClick={() => setShowPrivacy(true)}
+                className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
+              >
+                隐私保护
+              </button>
               <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
-              <span className="text-xs font-medium">隐私保护</span>
-              <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
-              <span className="text-xs font-medium">用户协议</span>
+              <button 
+                onClick={() => setShowTerms(true)}
+                className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
+              >
+                用户协议
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* 隐私保护弹窗 */}
+      {showPrivacy && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div className="text-center mb-6">
+              <div className="text-3xl mb-4">🔒</div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                隐私保护政策
+              </h3>
+            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-300 space-y-4">
+              <p>我们重视您的隐私保护，致力于为您提供安全、可靠的记账服务。</p>
+              <p><strong>我们收集的信息：</strong></p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li>您的用户名和密码（用于登录验证）</li>
+                <li>您的记账数据（用于目标管理和统计分析）</li>
+                <li>您的设备信息（用于保障账户安全）</li>
+              </ul>
+              <p><strong>我们如何使用您的信息：</strong></p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li>提供和改进我们的服务</li>
+                <li>保障您的账户安全</li>
+                <li>进行数据分析和统计</li>
+              </ul>
+              <p><strong>我们不会：</strong></p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li>向第三方分享您的个人信息</li>
+                <li>在未经您同意的情况下使用您的信息</li>
+                <li>收集与服务无关的信息</li>
+              </ul>
+              <p className="mt-4">
+                如您对我们的隐私保护政策有任何疑问，请联系我们。
+              </p>
+            </div>
+            <div className="mt-6">
+              <button
+                onClick={() => setShowPrivacy(false)}
+                className="w-full py-3 rounded-2xl font-bold text-white bg-wealth hover:bg-emerald-600 transition-colors"
+              >
+                我知道了
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 用户协议弹窗 */}
+      {showTerms && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div className="text-center mb-6">
+              <div className="text-3xl mb-4">📄</div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                用户协议
+              </h3>
+            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-300 space-y-4">
+              <p>欢迎使用荔枝记账应用（以下简称"本应用"）。使用本应用前，请您仔细阅读并理解本用户协议。</p>
+              <p><strong>1. 账户注册与使用</strong></p>
+              <p>您需要注册一个账户才能使用本应用的全部功能。您应提供真实、准确的个人信息，并妥善保管您的账户密码。</p>
+              <p><strong>2. 用户义务</strong></p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li>遵守国家法律法规和本协议的规定</li>
+                <li>不得利用本应用进行任何违法违规活动</li>
+                <li>不得侵犯他人的合法权益</li>
+                <li>不得干扰本应用的正常运行</li>
+              </ul>
+              <p><strong>3. 服务内容</strong></p>
+              <p>本应用为您提供记账、目标管理等功能，我们会不断改进和优化服务内容。</p>
+              <p><strong>4. 知识产权</strong></p>
+              <p>本应用的所有内容和功能均受知识产权法律保护，未经授权不得复制、修改或分发。</p>
+              <p><strong>5. 免责声明</strong></p>
+              <p>本应用不对因网络故障、系统故障等原因导致的服务中断或数据丢失承担责任。</p>
+              <p><strong>6. 协议修改</strong></p>
+              <p>我们有权根据法律法规的变化或业务发展需要修改本协议，修改后的协议将在应用内公示。</p>
+              <p className="mt-4">
+                您使用本应用即表示您同意并接受本用户协议的全部内容。
+              </p>
+            </div>
+            <div className="mt-6">
+              <button
+                onClick={() => setShowTerms(false)}
+                className="w-full py-3 rounded-2xl font-bold text-white bg-wealth hover:bg-emerald-600 transition-colors"
+              >
+                我知道了
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

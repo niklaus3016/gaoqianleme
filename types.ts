@@ -1,9 +1,7 @@
 
 export enum AppRoute {
   GOAL = 'goal',
-  ACCOUNTING = 'accounting',
-  EARN = 'earn',
-  WELFARE = 'welfare'
+  ACCOUNTING = 'accounting'
 }
 
 export interface IncomeRecord {

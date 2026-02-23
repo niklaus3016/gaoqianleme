@@ -4,8 +4,6 @@ import Login from './components/Login';
 import Layout from './components/Layout';
 import GoalModule from './components/GoalModule';
 import AccountingModule from './components/AccountingModule';
-import EarnModule from './components/EarnModule';
-import WelfareModule from './components/WelfareModule';
 import { AppRoute, ThemeMode } from './types';
 
 const App: React.FC = () => {
@@ -26,20 +24,25 @@ const App: React.FC = () => {
   const handleLogin = (id: string) => {
     setUserId(id);
     setIsLoggedIn(true);
-    localStorage.setItem('userId', id);
   };
 
   const handleLogout = () => {
     setUserId('');
     setIsLoggedIn(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
     localStorage.removeItem('userId');
   };
 
   useEffect(() => {
-    const savedUserId = localStorage.getItem('userId');
-    if (savedUserId) {
-      setUserId(savedUserId);
-      setIsLoggedIn(true);
+    const savedToken = localStorage.getItem('token');
+    const savedUserInfo = localStorage.getItem('userInfo');
+    if (savedToken && savedUserInfo) {
+      const userInfo = JSON.parse(savedUserInfo);
+      if (userInfo.userId) {
+        setUserId(userInfo.userId);
+        setIsLoggedIn(true);
+      }
     }
   }, []);
 
@@ -51,8 +54,6 @@ const App: React.FC = () => {
     switch (activeRoute) {
       case AppRoute.GOAL: return <GoalModule userId={userId} />;
       case AppRoute.ACCOUNTING: return <AccountingModule userId={userId} />;
-      case AppRoute.EARN: return <EarnModule userId={userId} />;
-      case AppRoute.WELFARE: return <WelfareModule userId={userId} />;
       default: return <GoalModule userId={userId} />;
     }
   };

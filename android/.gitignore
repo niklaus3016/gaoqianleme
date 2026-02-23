@@ -2,7 +2,8 @@
 
 # Built application files
 *.apk
-*.aar
+# 允许提交libs目录中的.aar文件
+# *.aar
 *.ap_
 *.aab
 

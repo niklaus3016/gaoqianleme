@@ -1,5 +1,6 @@
 // 百度联盟广告服务
-import { registerPlugin } from '@capacitor/core';
+// 浏览器环境检查
+const isBrowser = typeof window !== 'undefined' && !window['Capacitor'];
 
 // 百度联盟广告插件类型定义
 interface BaiduAdPlugin {
@@ -30,8 +31,52 @@ interface BaiduAdPlugin {
   }>;
 }
 
-// 注册百度联盟广告插件
-const BaiduAd = registerPlugin<BaiduAdPlugin>('BaiduAd');
+// 注册百度联盟广告插件或使用浏览器模拟实现
+let BaiduAd: BaiduAdPlugin;
+
+if (isBrowser) {
+  // 浏览器环境：使用模拟实现
+  BaiduAd = {
+    async init() {
+      console.log('浏览器环境：广告SDK初始化（模拟）');
+      return { success: true, version: 'browser-simulator' };
+    },
+    async loadRewardedAd() {
+      console.log('浏览器环境：广告加载（模拟）');
+      return { success: true };
+    },
+    async showRewardedAd() {
+      console.log('浏览器环境：广告展示（模拟）');
+      return { rewarded: true, amount: 10, name: '金币' };
+    },
+    async isAdLoaded() {
+      return { isLoaded: false };
+    }
+  };
+} else {
+  // 移动环境：使用真实插件
+  try {
+    const { registerPlugin } = require('@capacitor/core');
+    BaiduAd = registerPlugin('BaiduAd') as BaiduAdPlugin;
+  } catch (error) {
+    console.error('无法加载Capacitor插件:', error);
+    // 降级为模拟实现
+    BaiduAd = {
+      async init() {
+        return { success: false };
+      },
+      async loadRewardedAd() {
+        return { success: false, error: 'Capacitor插件未加载' };
+      },
+      async showRewardedAd() {
+        return { rewarded: false, error: 'Capacitor插件未加载' };
+      },
+      async isAdLoaded() {
+        return { isLoaded: false };
+      }
+    };
+  }
+}
 
 // 广告位ID
 const AD_UNIT_ID = '19100351';

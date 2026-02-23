@@ -26,6 +26,7 @@ const GoalModule: React.FC<GoalModuleProps> = ({ userId }) => {
   const [showGoalInput, setShowGoalInput] = useState(false);
   const [goalInputValue, setGoalInputValue] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     loadTarget();
@@ -76,7 +77,9 @@ const GoalModule: React.FC<GoalModuleProps> = ({ userId }) => {
         setShowGoalInput(false);
         setIsEditing(false);
         setGoalInputValue('');
-        alert(isEditing ? '年度目标修改成功！' : '年度目标设置成功！');
+        setShowSuccessModal(true);
+        // 3秒后自动关闭弹窗
+        setTimeout(() => setShowSuccessModal(false), 3000);
       } else {
         alert(response.message || '设置失败，请重试');
       }
@@ -203,7 +206,7 @@ const GoalModule: React.FC<GoalModuleProps> = ({ userId }) => {
               <div className="w-full max-w-[280px] space-y-4">
                 <div className="text-center">
                   <div className="text-2xl font-black text-wealth mb-2">💰</div>
-                  <p className="text-sm font-bold text-slate-600 mb-4">设置你的年度搞钱目标</p>
+                  <p className="text-sm font-bold text-slate-600 mb-4">设置你的年度赚钱目标</p>
                 </div>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-black text-wealth">￥</span>
@@ -240,9 +243,9 @@ const GoalModule: React.FC<GoalModuleProps> = ({ userId }) => {
               </div>
             ) : (
               <div className="text-center cursor-pointer" onClick={() => setShowGoalInput(true)}>
-                <div className="text-4xl font-black text-slate-400 mb-2 animate-bounce">🎯</div>
-                <p className="text-base font-bold text-wealth animate-pulse">请先输入年度搞钱目标</p>
-              </div>
+                  <div className="text-4xl font-black text-slate-400 mb-2 animate-bounce">🎯</div>
+                  <p className="text-base font-bold text-wealth animate-pulse">请先输入年度赚钱目标</p>
+                </div>
             )}
           </div>
         ) : (
@@ -251,7 +254,7 @@ const GoalModule: React.FC<GoalModuleProps> = ({ userId }) => {
               <div className="w-full max-w-[280px] space-y-4">
                 <div className="text-center">
                   <div className="text-2xl font-black text-wealth mb-2">✏️</div>
-                  <p className="text-sm font-bold text-slate-600 mb-4">修改你的年度搞钱目标</p>
+                  <p className="text-sm font-bold text-slate-600 mb-4">修改你的年度赚钱目标</p>
                 </div>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-black text-wealth">￥</span>
@@ -410,7 +413,43 @@ const GoalModule: React.FC<GoalModuleProps> = ({ userId }) => {
         .animate-bounce-gentle {
           animation: bounce-gentle 2.5s ease-in-out infinite;
         }
+        @keyframes slideInUp {
+          from {
+            transform: translateY(50px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        .animate-slide-in-up {
+          animation: slideInUp 0.3s ease-out;
+        }
       `}} />
+
+      {/* 成功提示弹窗 */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-slide-in-up">
+            <div className="text-center">
+              <div className="text-5xl mb-4 animate-bounce">🎯</div>
+              <h3 className="text-xl font-bold gold-text mb-2">
+                {isEditing ? '年度目标修改成功！' : '年度目标设置成功！'}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                {isEditing ? '你的目标已更新，继续努力！' : '目标已设定，开始你的搞钱之旅吧！'}
+              </p>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full py-3.5 rounded-2xl font-bold text-white bg-wealth hover:bg-emerald-600 transition-all active:scale-95"
+              >
+                太棒了
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

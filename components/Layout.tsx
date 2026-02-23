@@ -32,8 +32,6 @@ const Layout: React.FC<LayoutProps> = ({ children, activeRoute, setActiveRoute, 
   const navItems = [
     { id: AppRoute.GOAL, label: '目标', icon: '🎯' },
     { id: AppRoute.ACCOUNTING, label: '记账', icon: '💰' },
-    { id: AppRoute.EARN, label: '搞钱', icon: '🚀' },
-    { id: AppRoute.WELFARE, label: '福利', icon: '🎁' },
   ];
 
   return (
@@ -41,8 +39,8 @@ const Layout: React.FC<LayoutProps> = ({ children, activeRoute, setActiveRoute, 
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b px-6 py-4 flex justify-between items-center transition-colors">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-wealth rounded-lg flex items-center justify-center text-white text-lg font-bold">搞</div>
-          <h1 className="text-xl font-bold gold-text">搞钱了么</h1>
+          <div className="w-8 h-8 bg-gradient-to-br from-red-400 to-red-600 rounded-lg flex items-center justify-center text-white text-lg font-bold">📝</div>
+          <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-300 via-pink-400 to-red-500">荔枝记账</h1>
         </div>
         <div className="flex items-center space-x-2">
           {onLogout && (
