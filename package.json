@@ -16,6 +16,8 @@
     "@capacitor/browser": "^8.0.1",
     "@capacitor/cli": "^8.0.2",
     "@capacitor/core": "^8.0.2",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/http": "^0.0.2",
     "@google/genai": "^1.40.0",
     "lunar-javascript": "^1.7.7",
     "react": "^19.2.4",

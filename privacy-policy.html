@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隐私政策 - 荔枝记账</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+        .loading {
+            color: #999;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 隐私政策</h1>
+        <p>我们重视您的隐私保护，致力于为您提供安全、可靠的记账服务。</p>
+        <p><strong>我们收集的信息：</strong></p>
+        <p>您的用户名和密码（用于登录验证）<br>您的记账数据（用于目标管理和统计分析）<br>您的设备信息（用于保障账户安全）</p>
+        <p><strong>我们如何使用您的信息：</strong></p>
+        <p>提供和改进我们的服务<br>保障您的账户安全<br>进行数据分析和统计</p>
+        <p><strong>我们不会：</strong></p>
+        <p>向第三方分享您的个人信息<br>在未经您同意的情况下使用您的信息<br>收集与服务无关的信息</p>
+        <p class="loading">正在加载隐私政策PDF...</p>
+        <a href="https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf" target="_blank" class="button">查看完整隐私政策</a>
+    </div>
+    <script>
+        window.onload = function() {
+            const loadingText = document.querySelector('.loading');
+            loadingText.style.display = 'none';
+        };
+    </script>
+</body>
+</html>
