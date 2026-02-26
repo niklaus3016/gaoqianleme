@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.gaoqianleme.app',
-  appName: '搞钱了么',
+  appName: '荔枝记账',
   webDir: 'dist',
   bundledWebRuntime: false,
   server: {
