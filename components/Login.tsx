@@ -11,7 +11,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -420,7 +419,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <div className="mt-12 pt-8 border-t border-white/10">
             <div className="flex items-center justify-center text-gray-500">
               <button 
-                onClick={() => setShowPrivacy(true)}
+                onClick={() => window.open('https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf', '_blank')}
                 className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
               >
                 隐私政策
@@ -430,51 +429,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         </div>
       </div>
 
-      {/* 隐私保护弹窗 */}
-      {showPrivacy && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-2xl max-h-[80vh] overflow-y-auto">
-            <div className="text-center mb-6">
-              <div className="text-3xl mb-4">🔒</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                隐私政策
-              </h3>
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300 space-y-4">
-              <p>我们重视您的隐私保护，致力于为您提供安全、可靠的记账服务。</p>
-              <p><strong>我们收集的信息：</strong></p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>您的用户名和密码（用于登录验证）</li>
-                <li>您的记账数据（用于目标管理和统计分析）</li>
-                <li>您的设备信息（用于保障账户安全）</li>
-              </ul>
-              <p><strong>我们如何使用您的信息：</strong></p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>提供和改进我们的服务</li>
-                <li>保障您的账户安全</li>
-                <li>进行数据分析和统计</li>
-              </ul>
-              <p><strong>我们不会：</strong></p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>向第三方分享您的个人信息</li>
-                <li>在未经您同意的情况下使用您的信息</li>
-                <li>收集与服务无关的信息</li>
-              </ul>
-              <p className="mt-4">
-                如您对我们的隐私保护政策有任何疑问，请联系我们。
-              </p>
-            </div>
-            <div className="mt-6">
-              <button
-                onClick={() => setShowPrivacy(false)}
-                className="w-full py-3 rounded-2xl font-bold text-white bg-wealth hover:bg-emerald-600 transition-colors"
-              >
-                我知道了
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
 
     </div>
