@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Browser } from '@capacitor/browser';
 
 interface LoginProps {
   onLogin: (userId: string) => void;
@@ -28,7 +29,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
+      const response = await fetch('https://lisqtboywrjw.sealoshzh.site/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username.trim(), password })
@@ -85,7 +86,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
+      const response = await fetch('https://lisqtboywrjw.sealoshzh.site/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username.trim(), password })
@@ -107,7 +108,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       if (data.code === 200) {
         // 注册成功后自动登录
         try {
-          const loginResponse = await fetch('http://localhost:3000/api/auth/login', {
+          const loginResponse = await fetch('https://lisqtboywrjw.sealoshzh.site/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: username.trim(), password })
@@ -155,7 +156,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       const guestPassword = 'guest' + Date.now();
       
       // 注册游客账号
-      const registerResponse = await fetch('http://localhost:3000/api/auth/register', {
+      const registerResponse = await fetch('https://lisqtboywrjw.sealoshzh.site/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: guestUsername, password: guestPassword })
@@ -176,7 +177,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       
       if (registerData.code === 200) {
         // 登录游客账号
-        const loginResponse = await fetch('http://localhost:3000/api/auth/login', {
+        const loginResponse = await fetch('https://lisqtboywrjw.sealoshzh.site/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: guestUsername, password: guestPassword })
@@ -419,7 +420,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <div className="mt-12 pt-8 border-t border-white/10">
             <div className="flex items-center justify-center text-gray-500">
               <button 
-                onClick={() => window.open('https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf', '_blank')}
+                onClick={() => Browser.open({ url: 'https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf' })}
                 className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
               >
                 隐私政策
