@@ -420,7 +420,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <div className="mt-12 pt-8 border-t border-white/10">
             <div className="flex items-center justify-center text-gray-500">
               <button 
-                onClick={() => Browser.open({ url: 'https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf' })}
+                onClick={() => window.open('https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf', '_system')}
                 className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
               >
                 隐私政策

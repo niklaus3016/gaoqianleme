@@ -381,7 +381,7 @@ const GoalModule: React.FC<GoalModuleProps> = ({ userId }) => {
 
             {/* 动态金句 */}
             <p className="text-[14px] font-bold text-slate-800 dark:text-gray-100 italic leading-snug max-w-[280px]">
-              "{dailyQuote}"
+              "立志赚钱用荔枝记账"
             </p>
 
             {/* 固定辅助标题 */}
