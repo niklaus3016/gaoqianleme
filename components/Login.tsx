@@ -12,7 +12,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPrivacy, setShowPrivacy] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -419,19 +418,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </div>
 
           <div className="mt-12 pt-8 border-t border-white/10">
-            <div className="flex items-center justify-center space-x-8 text-gray-500">
+            <div className="flex items-center justify-center text-gray-500">
               <button 
                 onClick={() => setShowPrivacy(true)}
                 className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
               >
-                隐私保护
-              </button>
-              <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
-              <button 
-                onClick={() => setShowTerms(true)}
-                className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
-              >
-                用户协议
+                隐私政策
               </button>
             </div>
           </div>
@@ -445,7 +437,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <div className="text-center mb-6">
               <div className="text-3xl mb-4">🔒</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                隐私保护政策
+                隐私政策
               </h3>
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-300 space-y-4">
@@ -484,50 +476,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         </div>
       )}
 
-      {/* 用户协议弹窗 */}
-      {showTerms && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-2xl max-h-[80vh] overflow-y-auto">
-            <div className="text-center mb-6">
-              <div className="text-3xl mb-4">📄</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                用户协议
-              </h3>
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300 space-y-4">
-              <p>欢迎使用荔枝记账应用（以下简称"本应用"）。使用本应用前，请您仔细阅读并理解本用户协议。</p>
-              <p><strong>1. 账户注册与使用</strong></p>
-              <p>您需要注册一个账户才能使用本应用的全部功能。您应提供真实、准确的个人信息，并妥善保管您的账户密码。</p>
-              <p><strong>2. 用户义务</strong></p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>遵守国家法律法规和本协议的规定</li>
-                <li>不得利用本应用进行任何违法违规活动</li>
-                <li>不得侵犯他人的合法权益</li>
-                <li>不得干扰本应用的正常运行</li>
-              </ul>
-              <p><strong>3. 服务内容</strong></p>
-              <p>本应用为您提供记账、目标管理等功能，我们会不断改进和优化服务内容。</p>
-              <p><strong>4. 知识产权</strong></p>
-              <p>本应用的所有内容和功能均受知识产权法律保护，未经授权不得复制、修改或分发。</p>
-              <p><strong>5. 免责声明</strong></p>
-              <p>本应用不对因网络故障、系统故障等原因导致的服务中断或数据丢失承担责任。</p>
-              <p><strong>6. 协议修改</strong></p>
-              <p>我们有权根据法律法规的变化或业务发展需要修改本协议，修改后的协议将在应用内公示。</p>
-              <p className="mt-4">
-                您使用本应用即表示您同意并接受本用户协议的全部内容。
-              </p>
-            </div>
-            <div className="mt-6">
-              <button
-                onClick={() => setShowTerms(false)}
-                className="w-full py-3 rounded-2xl font-bold text-white bg-wealth hover:bg-emerald-600 transition-colors"
-              >
-                我知道了
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };
