@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Browser } from '@capacitor/browser';
 
 interface LoginProps {
   onLogin: (userId: string) => void;
@@ -472,7 +473,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 我知道了
               </button>
               <button
-                onClick={() => window.open('https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf', '_blank')}
+                onClick={async () => {
+                  try {
+                    await Browser.open({ 
+                      url: 'https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf',
+                      toolbarColor: '#10b981'
+                    });
+                  } catch (error) {
+                    console.error('Failed to open browser:', error);
+                    alert('无法打开隐私政策，请稍后重试');
+                  }
+                }}
                 className="w-full py-3 rounded-2xl font-bold text-white bg-gray-500 hover:bg-gray-600 transition-colors"
               >
                 查看完整隐私政策
