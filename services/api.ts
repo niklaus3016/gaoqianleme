@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000'; // 后端服务器地址
+const API_BASE_URL = 'https://lisqtboywrjw.sealoshzh.site'; // 后端服务器地址
 const USE_MOCK_DATA = false; // 禁用模拟数据，使用真实后端API
 
 interface ApiResponse<T = any> {
