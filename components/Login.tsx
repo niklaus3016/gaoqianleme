@@ -13,6 +13,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -307,9 +308,22 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                   </div>
                 )}
 
+                <div className="flex items-start space-x-3 mb-4">
+                  <input
+                    type="checkbox"
+                    id="privacy-agree"
+                    checked={privacyAgreed}
+                    onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-wealth rounded border-gray-600 focus:ring-wealth focus:ring-2"
+                  />
+                  <label htmlFor="privacy-agree" className="text-xs text-gray-400 cursor-pointer">
+                    我已阅读并同意<span className="text-wealth">隐私政策</span>
+                  </label>
+                </div>
+
                 <button
                   type="submit"
-                  disabled={loading || !username.trim() || !password.trim()}
+                  disabled={loading || !username.trim() || !password.trim() || !privacyAgreed}
                   className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-300 ${
                     loading || !username.trim() || !password.trim()
                       ? 'bg-white/10 text-gray-500 cursor-not-allowed'
@@ -426,6 +440,23 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               >
                 隐私政策
               </button>
+              <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
+              <button 
+                onClick={async () => {
+                  try {
+                    await Browser.open({ 
+                      url: 'https://www.gnyq.cn/privacy-policy.html',
+                      toolbarColor: '#10b981'
+                    });
+                  } catch (error) {
+                    console.error('Failed to open browser:', error);
+                    alert('无法打开隐私政策，请稍后重试');
+                  }
+                }}
+                className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
+              >
+                查看完整隐私政策
+              </button>
             </div>
           </div>
         </div>
@@ -476,7 +507,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 onClick={async () => {
                   try {
                     await Browser.open({ 
-                      url: 'https://yinsiurl.oss-cn-hangzhou.aliyuncs.com/%E8%8D%94%E6%9E%9D%E8%AE%B0%E8%B4%A6%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96.pdf',
+                      url: 'https://www.gnyq.cn/privacy-policy.html',
                       toolbarColor: '#10b981'
                     });
                   } catch (error) {
