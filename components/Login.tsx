@@ -12,7 +12,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(true);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -490,47 +490,57 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       {/* 隐私政策弹窗 */}
       {showPrivacy && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-2xl max-h-[80vh] overflow-y-auto">
-            <div className="text-center mb-6">
-              <div className="text-3xl mb-4">🔒</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                隐私政策
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-sm shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div className="p-5">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 text-center pt-5">
+                用户协议与隐私政策
               </h3>
+              <div className="mb-6">
+                <p className="text-base text-gray-900 dark:text-white mb-3">(1)《隐私政策》中关于个人设备用户信息的收集和使用的说明。</p>
+                <p className="text-base text-gray-900 dark:text-white">(2)《隐私政策》中与第三方SDK类服务商数据共享、相关信息收集和使用说明。</p>
+              </div>
+              <div className="mb-6">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">用户协议和隐私政策说明：</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  阅读完整的
+                  <span 
+                    onClick={async () => {
+                      try {
+                        await Browser.open({ 
+                          url: 'https://www.gnyq.cn/user-agreement.html',
+                          toolbarColor: '#10b981'
+                        });
+                      } catch (error) {
+                        console.error('Failed to open browser:', error);
+                        alert('无法打开用户服务协议，请稍后重试');
+                      }
+                    }}
+                    className="text-red-500 hover:underline cursor-pointer"
+                  >
+                    《用户服务协议》
+                  </span>
+                  和
+                  <span 
+                    onClick={async () => {
+                      try {
+                        await Browser.open({ 
+                          url: 'https://www.gnyq.cn/privacy-policy.html',
+                          toolbarColor: '#10b981'
+                        });
+                      } catch (error) {
+                        console.error('Failed to open browser:', error);
+                        alert('无法打开隐私政策，请稍后重试');
+                      }
+                    }}
+                    className="text-red-500 hover:underline cursor-pointer"
+                  >
+                    《隐私政策》
+                  </span>
+                  了解详细内容。
+                </p>
+              </div>
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300 space-y-4">
-              <p>我们重视您的隐私保护，致力于为您提供安全、可靠的记账服务。</p>
-              <p><strong>我们收集的信息：</strong></p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>您的用户名和密码（用于登录验证）</li>
-                <li>您的记账数据（用于目标管理和统计分析）</li>
-                <li>您的设备信息（用于保障账户安全）</li>
-              </ul>
-              <p><strong>我们如何使用您的信息：</strong></p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>提供和改进我们的服务</li>
-                <li>保障您的账户安全</li>
-                <li>进行数据分析和统计</li>
-              </ul>
-              <p><strong>我们不会：</strong></p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>向第三方分享您的个人信息</li>
-                <li>在未经您同意的情况下使用您的信息</li>
-                <li>收集与服务无关的信息</li>
-              </ul>
-              <p className="mt-4">
-                如您对我们的隐私保护政策有任何疑问，请联系我们。
-              </p>
-            </div>
-            <div className="mt-6 space-y-3">
-              <button
-                onClick={() => {
-                  setShowPrivacy(false);
-                  setPrivacyAgreed(true);
-                }}
-                className="w-full py-3 rounded-2xl font-bold text-white bg-wealth hover:bg-emerald-600 transition-colors"
-              >
-                同意
-              </button>
+            <div className="flex border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => {
                   setShowPrivacy(false);
@@ -543,25 +553,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     setShowPrivacy(true);
                   }
                 }}
-                className="w-full py-3 rounded-2xl font-bold text-white bg-gray-500 hover:bg-gray-600 transition-colors"
+                className="flex-1 py-4 text-base font-medium text-gray-900 dark:text-white bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-gray-700"
               >
                 不同意
               </button>
               <button
-                onClick={async () => {
-                  try {
-                    await Browser.open({ 
-                      url: 'https://www.gnyq.cn/privacy-policy.html',
-                      toolbarColor: '#10b981'
-                    });
-                  } catch (error) {
-                    console.error('Failed to open browser:', error);
-                    alert('无法打开隐私政策，请稍后重试');
-                  }
+                onClick={() => {
+                  setShowPrivacy(false);
+                  setPrivacyAgreed(true);
                 }}
-                className="w-full py-3 rounded-2xl font-bold text-white bg-gray-300 hover:bg-gray-400 transition-colors text-gray-800"
+                className="flex-1 py-4 text-base font-medium text-white bg-red-500 hover:bg-red-600"
               >
-                查看完整隐私政策
+                同意并继续
               </button>
             </div>
           </div>
