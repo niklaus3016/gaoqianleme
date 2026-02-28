@@ -314,11 +314,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     id="privacy-agree"
                     checked={privacyAgreed}
                     onChange={(e) => setPrivacyAgreed(e.target.checked)}
-                    className="mt-1 w-4 h-4 text-wealth rounded border-gray-600 focus:ring-wealth focus:ring-2"
+                    className="mt-1 w-4 h-4 text-wealth rounded border-gray-600 focus:ring-wealth focus:ring-2 cursor-pointer"
                   />
-                  <label htmlFor="privacy-agree" className="text-xs text-gray-400 cursor-pointer">
-                    我已阅读并同意<span className="text-wealth">隐私政策</span>
-                  </label>
+                  <div className="text-xs text-gray-400">
+                    我已阅读并同意
+                    <span 
+                      onClick={() => setShowPrivacy(true)}
+                      className="text-wealth hover:underline cursor-pointer"
+                    >
+                      隐私政策
+                    </span>
+                  </div>
                 </div>
 
                 <button
@@ -410,11 +416,30 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                   </div>
                 )}
 
+                <div className="flex items-start space-x-3 mb-4">
+                  <input
+                    type="checkbox"
+                    id="register-privacy-agree"
+                    checked={privacyAgreed}
+                    onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-wealth rounded border-gray-600 focus:ring-wealth focus:ring-2 cursor-pointer"
+                  />
+                  <div className="text-xs text-gray-400">
+                    我已阅读并同意
+                    <span 
+                      onClick={() => setShowPrivacy(true)}
+                      className="text-wealth hover:underline cursor-pointer"
+                    >
+                      隐私政策
+                    </span>
+                  </div>
+                </div>
+
                 <button
                   type="submit"
-                  disabled={loading || !username.trim() || !password.trim() || !confirmPassword.trim()}
+                  disabled={loading || !username.trim() || !password.trim() || !confirmPassword.trim() || !privacyAgreed}
                   className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-300 ${
-                    loading || !username.trim() || !password.trim() || !confirmPassword.trim()
+                    loading || !username.trim() || !password.trim() || !confirmPassword.trim() || !privacyAgreed
                       ? 'bg-white/10 text-gray-500 cursor-not-allowed'
                       : 'bg-white text-black hover:bg-gray-100 hover:scale-[1.02] active:scale-[0.98]'
                   }`}
@@ -498,10 +523,29 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </div>
             <div className="mt-6 space-y-3">
               <button
-                onClick={() => setShowPrivacy(false)}
+                onClick={() => {
+                  setShowPrivacy(false);
+                  setPrivacyAgreed(true);
+                }}
                 className="w-full py-3 rounded-2xl font-bold text-white bg-wealth hover:bg-emerald-600 transition-colors"
               >
-                我知道了
+                同意
+              </button>
+              <button
+                onClick={() => {
+                  setShowPrivacy(false);
+                  // 可以在这里添加合理的挽留逻辑，例如显示一个确认弹窗
+                  if (window.confirm('您确定要拒绝隐私政策吗？拒绝后将无法使用我们的服务。')) {
+                    // 拒绝后可以引导用户离开应用或限制功能
+                    alert('由于您拒绝了隐私政策，我们无法为您提供服务。');
+                  } else {
+                    // 用户取消拒绝，保持弹窗打开
+                    setShowPrivacy(true);
+                  }
+                }}
+                className="w-full py-3 rounded-2xl font-bold text-white bg-gray-500 hover:bg-gray-600 transition-colors"
+              >
+                不同意
               </button>
               <button
                 onClick={async () => {
@@ -515,7 +559,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     alert('无法打开隐私政策，请稍后重试');
                   }
                 }}
-                className="w-full py-3 rounded-2xl font-bold text-white bg-gray-500 hover:bg-gray-600 transition-colors"
+                className="w-full py-3 rounded-2xl font-bold text-white bg-gray-300 hover:bg-gray-400 transition-colors text-gray-800"
               >
                 查看完整隐私政策
               </button>
